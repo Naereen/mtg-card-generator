@@ -29,10 +29,10 @@
       const box = node.getBoundingClientRect();
 
       htmlToImage.toPng(node, {
-        quality: 1.0,
+        quality: 2.0,
         width: box.width,     // Use scaled width
         height: box.height,   // Use scaled height
-        pixelRatio: 1,
+        pixelRatio: 2,        // Increase pixel ratio for better quality
         skipAutoScale: true
       })
               .then(function(dataUrl) {
