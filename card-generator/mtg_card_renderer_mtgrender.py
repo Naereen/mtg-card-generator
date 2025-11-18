@@ -18,9 +18,13 @@ class MTGCardRendererMtgrender:
         http://{host}:{port}/mtgrender/?card=Hostage%20Taker&set=mb2&cn=137
 
     puis on screenshot le conteneur .card-display.
+
+    La hauteur capturée est limitée à 1341 px pour éviter de prendre la section
+    ajoutée en bas de la page par la nouvelle version de l'app.
     """
 
     CARD_SELECTOR = ".card-display"
+    MAX_CAPTURE_HEIGHT = 672  # pixels
 
     def __init__(
         self,
@@ -97,6 +101,14 @@ class MTGCardRendererMtgrender:
                     print(f"⚠️ Pas de bounding box pour {name}")
                     continue
 
+                # Limiter la hauteur capturée à MAX_CAPTURE_HEIGHT
+                clip_box = {
+                    "x": box["x"],
+                    "y": box["y"],
+                    "width": box["width"],
+                    "height": min(box["height"], float(self.MAX_CAPTURE_HEIGHT)),
+                }
+
                 rendered_cards_dir = self.config.output_dir / "rendered_cards"
                 rendered_cards_dir.mkdir(parents=True, exist_ok=True)
 
@@ -110,7 +122,7 @@ class MTGCardRendererMtgrender:
 
                 await page.screenshot(
                     path=str(output_path),
-                    clip=box,
+                    clip=clip_box,
                     type="png",
                     omit_background=False,
                     animations="disabled",
